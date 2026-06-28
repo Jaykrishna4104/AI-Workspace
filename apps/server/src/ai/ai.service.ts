@@ -1,44 +1,58 @@
 import { Injectable } from '@nestjs/common';
 import axios from 'axios';
+import { ConversationService } from '../conversation/conversation.service';
 
 @Injectable()
 export class AiService {
-  async chat(message: string) {
-    try {
-      const response = await axios.post(
-        'https://openrouter.ai/api/v1/chat/completions',
-        {
-          model: 'openai/gpt-4.1-mini',
+  constructor(
+    private readonly conversationService: ConversationService,
+  ) {}
 
-          messages: [
-            {
-              role: 'user',
-              content: message,
-            },
-          ],
+  async chat(userId: number, message: string) {
+    // Save user's message
+    await this.conversationService.createMessage(
+      userId,
+      'user',
+      message,
+    );
 
-          max_tokens: 200,
+    // Load previous conversation
+    const history =
+      await this.conversationService.getConversation(userId);
+
+    const messages = history.map((msg) => ({
+      role: msg.role,
+      content: msg.content,
+    }));
+
+    const response = await axios.post(
+      'https://openrouter.ai/api/v1/chat/completions',
+      {
+        model: 'openai/gpt-4.1-mini',
+        messages,
+        max_tokens: 200,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
+          'Content-Type': 'application/json',
         },
-        {
-          headers: {
-            Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
-            'Content-Type': 'application/json',
-          },
-        },
-      );
+      },
+    );
 
-      return response.data;
-    } catch (error: any) {
-      console.log('\n========== OPENROUTER ERROR ==========');
+    const aiReply =
+      response.data.choices[0].message.content;
 
-      if (error.response) {
-        console.log('Status:', error.response.status);
-        console.log('Data:', error.response.data);
-      } else {
-        console.log('Message:', error.message);
-      }
+    // Save AI response
+    await this.conversationService.createMessage(
+      userId,
+      'assistant',
+      aiReply,
+    );
 
-      throw error;
-    }
+    return {
+      success: true,
+      reply: aiReply,
+    };
   }
 }

@@ -1,9 +1,11 @@
 import { Module } from '@nestjs/common';
-import { AiService } from './ai.service';
 import { AiController } from './ai.controller';
+import { AiService } from './ai.service';
+import { ConversationModule } from '../conversation/conversation.module';
 
 @Module({
+  imports: [ConversationModule],
+  controllers: [AiController],
   providers: [AiService],
-  controllers: [AiController]
 })
 export class AiModule {}

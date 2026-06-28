@@ -6,7 +6,13 @@ export class AiController {
   constructor(private readonly aiService: AiService) {}
 
   @Post('chat')
-  async chat(@Body() body: { message: string }) {
-    return this.aiService.chat(body.message);
+  async chat(
+    @Body()
+    body: {
+      userId: number;
+      message: string;
+    },
+  ) {
+    return this.aiService.chat(body.userId, body.message);
   }
 }
