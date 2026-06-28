@@ -10,7 +10,9 @@
   },
   "devDependencies": {
     "@nestjs/cli": "^11.0.23",
+    "@types/passport-jwt": "^4.0.1",
     "prettier": "^3.7.4",
+    "prisma": "^6.19.3",
     "turbo": "^2.10.0",
     "typescript": "5.9.2"
   },
@@ -21,5 +23,13 @@
   "workspaces": [
     "apps/*",
     "packages/*"
-  ]
+  ],
+  "dependencies": {
+    "@nestjs/jwt": "^11.0.2",
+    "@nestjs/passport": "^11.0.5",
+    "@prisma/client": "^6.19.3",
+    "openai": "^6.45.0",
+    "passport": "^0.7.0",
+    "passport-jwt": "^4.0.1"
+  }
 }

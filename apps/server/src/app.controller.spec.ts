@@ -15,8 +15,16 @@ describe('AppController', () => {
   });
 
   describe('root', () => {
-    it('should return "Hello World!"', () => {
-      expect(appController.getHello()).toBe('Hello World!');
+    it('should return project information', () => {
+      const result = appController.getProjectInfo();
+
+      expect(result).toEqual({
+        project: 'AI Workspace',
+        version: '1.0.0',
+        status: 'Running',
+        developer: 'JK',
+        message: 'Welcome to AI Workspace API',
+      });
     });
   });
 });
